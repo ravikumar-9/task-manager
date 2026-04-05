@@ -42,7 +42,8 @@ try{
   const filters = [
     eq(tasks.userId, userId),
     search ? ilike(tasks.title, `%${search}%`) : undefined,
-    status !== undefined ? eq(tasks.status, status === "status") : undefined,
+    status  ? eq(tasks.status, status as string)
+    : undefined,
   ].filter(Boolean);
 
   const totalTasks = await db
@@ -95,7 +96,7 @@ export const updateTask = async (req: createTaskRequest, res: Response) => {
       .set({
         title: title as string,
         description: description as string,
-        status: status as boolean,
+        status: status,
       })
       .where(and(eq(tasks.id, id as string), eq(tasks.userId, userId)))
       .returning();
@@ -134,10 +135,11 @@ export const toggleTaskStatus = async (req: createTaskRequest, res: Response) =>
   try {
     const userId = req?.user?.userId;
     const { id } = req.params;
+    const {status} = req.body;
 
     const task = await db
       .update(tasks)
-      .set({ status: !tasks?.status })
+      .set({ status: status})
       .where(and(eq(tasks.id, id as string), eq(tasks.userId, userId)))
       .returning();
 

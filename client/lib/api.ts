@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getToken, setToken, clearToken } from "./token";
+import { toast } from "react-toastify";
 
 const api = axios.create({
   baseURL: process.env.BASE_URL || "http://localhost:5000/api",
@@ -62,7 +63,14 @@ api.interceptors.response.use(
       } catch {
         processQueue(null);
         clearToken();
-        // window.location.href = "/login";
+        toast.error("Session expired. Please log in again.", {
+          position: "top-right",
+          autoClose: 2000,
+          onClose: () => {
+            window.location.href = "/login";
+          },
+        }
+        );
       } finally {
         isRefreshing = false;
       }

@@ -8,34 +8,53 @@ export default function TaskFilters({
   setSearch,
   status,
   setStatus,
-}: any) {
+}: {
+  search: string;
+  setSearch: (value: string) => void;
+  status: string;
+  setStatus: (value: string) => void;
+}) {
   return (
-    <div className="flex flex-col md:flex-row gap-3 md:items-center justify-between">
-      <Input
-        placeholder="Search tasks..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="md:w-75"
-      />
-
-      <div className="flex gap-2">
+    <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 md:p-6 border rounded-2xl bg-background shadow-sm">
+      <div className="w-full md:max-w-lg">
+        <Input
+          placeholder="Search tasks..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-12 text-lg px-4"
+        />
+      </div>
+      <div className="flex flex-wrap gap-3">
         <Button
+          size="default"
           variant={status === "" ? "default" : "outline"}
           onClick={() => setStatus("")}
+          className="text-base px-5 py-2 cursor-pointer"
         >
           All
         </Button>
 
         <Button
-          variant={status === "true" ? "default" : "outline"}
-          onClick={() => setStatus("true")}
+          size="default"
+          variant={status === "completed" ? "default" : "outline"}
+          onClick={() => setStatus("completed")}
+          className="text-base px-5 py-2 cursor-pointer"
         >
           Completed
         </Button>
-
         <Button
-          variant={status === "false" ? "default" : "outline"}
-          onClick={() => setStatus("false")}
+          size="default"
+          variant={status === "in_progress" ? "default" : "outline"}
+          onClick={() => setStatus("in_progress")}
+          className="text-base px-5 py-2 cursor-pointer"
+        >
+          In Progress
+        </Button>
+        <Button
+          size="default"
+          variant={status === "pending" ? "default" : "outline"}
+          onClick={() => setStatus("pending")}
+          className="text-base px-5 py-2 cursor-pointer"
         >
           Pending
         </Button>

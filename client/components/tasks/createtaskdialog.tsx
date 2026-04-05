@@ -1,8 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import { useTasks } from "@/context/taskcontext";
-
 import {
   Dialog,
   DialogContent,
@@ -13,47 +10,86 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "../ui/textarea";
 
-export default function CreateTaskDialog() {
-  const { addTask } = useTasks();
-
-  const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-
-  const handleCreate = async () => {
-    if (!title) return;
-
-    await addTask(title, description);
-    setTitle("");
-    setDescription("");
-    setOpen(false);
-  };
-
+export default function TaskDialog({
+  open,
+  setOpen,
+  title,
+  setTitle,
+  description,
+  setDescription,
+  onSubmit,
+  mode = "create",
+  loading,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  title: string;
+  setTitle: (title: string) => void;
+  description: string;
+  setDescription: (description: string) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  mode?: "create" | "edit";
+  loading?: boolean;
+}) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button>Create Task</Button>
-      </DialogTrigger>
+      {mode === "create" && (
+        <DialogTrigger asChild>
+          <Button className="text-base px-5 py-2 shadow-sm cursor-pointer">+ New Task</Button>
+        </DialogTrigger>
+      )}
 
-      <DialogContent>
+      <DialogContent className="w-full max-w-lg p-6 md:p-8 space-y-6 rounded-2xl">
         <DialogHeader>
-          <DialogTitle>New Task</DialogTitle>
+          <DialogTitle className="text-2xl md:text-3xl font-semibold">
+            {mode === "edit" ? "Edit Task" : "Create Task"}
+          </DialogTitle>
+          <p className="text-sm text-muted-foreground mt-1">
+            {mode === "edit"
+              ? "Update your task details below"
+              : "Add a new task to stay organized"}
+          </p>
         </DialogHeader>
+        <form onSubmit={onSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Title</label>
+            <Input
+              placeholder="e.g. Finish dashboard UI"
+              value={title}
+              required
+              onChange={(e) => setTitle(e.target.value)}
+              className="h-11 text-base"
+            />
+          </div>
 
-        <Input
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Description</label>
+            <Textarea
+              placeholder="Optional details..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="h-11 text-base"
+            />
+          </div>
 
-        <Input
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        <Button onClick={handleCreate}>Create</Button>
+          <Button
+            type="submit"
+            disabled={loading}
+            className={`w-full h-11 text-base ${
+              loading ? "animate-pulse" : ""
+            }`}
+          >
+            {loading
+              ? mode === "edit"
+                ? "Updating..."
+                : "Creating..."
+              : mode === "edit"
+              ? "Update Task"
+              : "Create Task"}
+          </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );

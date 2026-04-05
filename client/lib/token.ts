@@ -13,4 +13,5 @@ export const getToken = () => {
 
 export const clearToken = () => {
   accessToken = null;
+  localStorage.removeItem("accessToken");
 };

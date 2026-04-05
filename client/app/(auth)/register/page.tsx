@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import {
   Card,
   CardContent,
@@ -14,30 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { toast } from "react-toastify";
-import { apiErrorHandler } from "@/lib/errorhandler";
 
 export default function Register() {
-  const { register } = useAuth();
-  const router = useRouter();
+  const { register, isLoading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault(); 
-
-    try {
-      setLoading(true);
-      await register(email, password);
-      toast.success("Account created successfully! Please log in.");
-      router.push("/login");
-    } catch (error) {
-      apiErrorHandler(error);
-    } finally {
-      setLoading(false);
-    }
+    e.preventDefault();
+    await register(email, password);
   };
 
   return (
@@ -78,12 +62,8 @@ export default function Register() {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <Button
-                className="w-full"
-                disabled={loading}
-                type="submit" // ✅ FIXED
-              >
-                {loading ? "Creating account..." : "Register"}
+              <Button className="w-full" disabled={isLoading} type="submit">
+                {isLoading ? "Creating account..." : "Register"}
               </Button>
 
               <p className="text-sm text-center text-muted-foreground">

@@ -32,10 +32,13 @@ export const loginController = async (req: Request, res: Response) => {
     await db.insert(refreshTokens).values({
       token: refreshToken,
       userId: user[0]?.id,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: false,
+      sameSite: "lax",
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     });
     return res.status(200).json({ message: "Login successful", accessToken });
   } catch (error) {
@@ -89,18 +92,20 @@ export const refreshTokenController = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Session Expired. Please login to continue" });
     }
     const tokenRecord = await db
       .select()
       .from(refreshTokens)
       .where(eq(refreshTokens.token, refreshToken));
     if (!tokenRecord || tokenRecord?.length === 0) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: "Session Expired. Please login to continue" });
     }
     const verify = verifyRefreshToken(refreshToken);
-    if (!verify) {
-      return res.status(401).json({ message: "Unauthorized" });
+    const isExpired = new Date(tokenRecord[0]?.expiresAt).getTime() < Date.now();
+    if (!verify || isExpired) {
+      await db.delete(refreshTokens).where(eq(refreshTokens.token, refreshToken));
+      return res.status(401).json({ message: "Session Expired. Please login to continue" });
     }
     const accessToken = await generateAccessToken(tokenRecord[0]?.userId);
     return res.status(200).json({ accessToken });

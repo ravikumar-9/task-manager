@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/context/authContext";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-
 import {
   Card,
   CardContent,
@@ -14,28 +12,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { apiErrorHandler } from "@/lib/errorhandler";
 
 export default function Login() {
-  const { login } = useAuth();
-  const router = useRouter();
+  const { login,isLoading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    try {
-      setLoading(true);
-      await login(email, password);
-      router.push("/dashboard");
-    } catch (error) {
-      apiErrorHandler(error);
-    } finally {
-      setLoading(false);
-    }
+    await login(email, password);
   };
 
   return (
@@ -79,9 +65,9 @@ export default function Login() {
               <Button
                 className="w-full"
                 type="submit"
-                disabled={loading}
+                disabled={isLoading}
               >
-                {loading ? "Signing in..." : "Login"}
+                {isLoading ? "Logging in..." : "Login"}
               </Button>
 
               <div className="flex justify-between text-sm text-muted-foreground">
