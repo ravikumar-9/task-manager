@@ -19,6 +19,7 @@ export default function Dashboard() {
     tasks,
     fetchTasks,
     loading,
+    isTaskUpdateLoading,
     addTask,
     updateTask,
     deleteTask,
@@ -91,8 +92,8 @@ export default function Dashboard() {
     fetchTasks({ search: debouncedSearchTerm, status, skip: page, limit });
   };
 
-  const handleToggle = async (task: Task, status: string) => {
-    await toggleTask(task.id, status);
+  const handleToggle = async (task: Task, updateStatus: string) => {
+    await toggleTask(task?.id, updateStatus);
     fetchTasks({ search: debouncedSearchTerm, status, skip: page, limit });
   };
 
@@ -129,7 +130,7 @@ export default function Dashboard() {
             setDescription={setDescription}
             onSubmit={mode === "edit" ? handleUpdate : handleCreate}
             mode={mode}
-            loading={loading}
+            loading={isTaskUpdateLoading}
           />
           <Button onClick={logout} className="cursor-pointer">
             <LogOut className="text-red-500" />
@@ -148,8 +149,11 @@ export default function Dashboard() {
 
       <div className="space-y-4 min-h-75">
         {loading ? (
-          [...Array(6)].map((_, i) => <TaskSkeleton key={i} />)
-        ) : tasks?.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => <TaskSkeleton key={i} />)}
+          </div>
+        ) 
+        : tasks?.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground">
             <p className="text-xl font-medium">No tasks found</p>
             <p className="text-sm mt-2">
@@ -161,11 +165,12 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {tasks?.map((task: Task) => (
                 <TaskItem
-                  key={task.id}
+                  key={task?.id}
                   task={task}
                   onEdit={() => handleEdit(task)}
-                  onDelete={() => handleDelete(task.id)}
-                  onToggle={(status: string) => handleToggle(task, status)}
+                  onDelete={() => handleDelete(task?.id)}
+                  onToggle={handleToggle}
+                  isLoading={isTaskUpdateLoading}
                 />
               ))}
             </div>

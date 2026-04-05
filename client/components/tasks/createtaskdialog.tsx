@@ -77,7 +77,7 @@ export default function TaskDialog({
           <Button
             type="submit"
             disabled={loading}
-            className={`w-full h-11 text-base ${
+            className={`w-full h-11 text-base cursor-pointer ${
               loading ? "animate-pulse" : ""
             }`}
           >

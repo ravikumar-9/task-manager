@@ -15,7 +15,7 @@ export default function TaskFilters({
   setStatus: (value: string) => void;
 }) {
   return (
-    <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 p-5 md:p-6 border rounded-2xl bg-background shadow-sm">
+    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 p-4 lg:p-5 border rounded-2xl bg-background shadow-sm">
       <div className="w-full md:max-w-lg">
         <Input
           placeholder="Search tasks..."
@@ -33,14 +33,13 @@ export default function TaskFilters({
         >
           All
         </Button>
-
         <Button
           size="default"
-          variant={status === "completed" ? "default" : "outline"}
-          onClick={() => setStatus("completed")}
+          variant={status === "pending" ? "default" : "outline"}
+          onClick={() => setStatus("pending")}
           className="text-base px-5 py-2 cursor-pointer"
         >
-          Completed
+          Pending
         </Button>
         <Button
           size="default"
@@ -52,11 +51,11 @@ export default function TaskFilters({
         </Button>
         <Button
           size="default"
-          variant={status === "pending" ? "default" : "outline"}
-          onClick={() => setStatus("pending")}
+          variant={status === "completed" ? "default" : "outline"}
+          onClick={() => setStatus("completed")}
           className="text-base px-5 py-2 cursor-pointer"
         >
-          Pending
+          Completed
         </Button>
       </div>
     </div>

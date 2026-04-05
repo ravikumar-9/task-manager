@@ -49,28 +49,29 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const res = await axios.post(
-          `http://localhost:5000/api/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        const res = await api.post("/auth/refresh");
         const newToken = res.data.accessToken;
+      
         setToken(newToken);
         processQueue(newToken);
-
+      
+        original.headers = original.headers || {};
         original.headers.Authorization = `Bearer ${newToken}`;
+      
         return api(original);
-      } catch {
+      } catch (err) {
         processQueue(null);
         clearToken();
+      
         toast.error("Session expired. Please log in again.", {
           position: "top-right",
           autoClose: 2000,
           onClose: () => {
             window.location.href = "/login";
           },
-        }
-        );
+        });
+      
+        return Promise.reject(err);
       } finally {
         isRefreshing = false;
       }
